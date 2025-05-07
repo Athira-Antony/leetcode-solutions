@@ -4,46 +4,41 @@ class Solution
         vector<vector<int>> updateMatrix(vector<vector<int>>& mat) 
         {
             int n = mat.size(), m = mat[0].size();
-            vector<vector<int>> vis(n,vector<int>(m,0));
-            vector<vector<int>> dist(n, vector<int>(m, 0));
-
-            queue<pair<pair<int,int>,int>> q;
+            vector<vector<int>> res (n,vector<int>(m,INT_MAX-1));
+            
+            //min of left and top
             for(int i=0; i<n; i++)
             {
                 for(int j=0; j<m; j++)
                 {
                     if(mat[i][j] == 0)
-                    {
-                        q.push({{i,j},0});
-                        vis[i][j] = 1;
-                    }
+                        res[i][j] = 0;
                     else
                     {
-                        vis[i][j] = 0;
+                        if(i>0)
+                            res[i][j] = min (res[i][j], res[i-1][j]+1);
+                        if(j>0)
+                            res[i][j] = min (res[i][j], res[i][j-1]+1);
                     }
                 }
             }
 
-            int dx[4] = {-1,0,1,0}, dy[4] = {0,1,0,-1};
-
-            while(!q.empty())
+            //min of right and bottom
+            for(int i=n-1; i>=0; i--)
             {
-                int row = q.front().first.first;
-                int col = q.front().first.second;
-                int level = q.front().second;
-                q.pop();
-                dist[row][col] = level;
-
-                for(int i=0; i<4; i++)
+                for(int j=m-1; j>=0; j--)
                 {
-                    int nrow = row+dx[i], ncol = col+dy[i];
-                    if(nrow >=0 && ncol >=0 && nrow<n && ncol<m && vis[nrow][ncol] == 0){
-                    vis[nrow][ncol] = 1;
-                    q.push({{nrow,ncol},level+1});
-                }
+                    if(mat[i][j] == 0)
+                        res[i][j] = 0;
+                    else
+                    {
+                        if(i<n-1)
+                            res[i][j] = min (res[i][j], res[i+1][j]+1);
+                        if(j<m-1)
+                            res[i][j] = min (res[i][j], res[i][j+1]+1);
+                    }
                 }
             }
-            
-            return dist;
+            return res;
         }
 };
